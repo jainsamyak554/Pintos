@@ -212,7 +212,7 @@ tid_t
 thread_create (const char *name, int priority,
                thread_func *function, void *aux) 
 {
-  struct thread *t;
+  struct thread *t = NULL;
   struct kernel_thread_frame *kf;
   struct switch_entry_frame *ef;
   struct switch_threads_frame *sf;
@@ -254,7 +254,9 @@ thread_create (const char *name, int priority,
 
   /* Add to run queue. */
   thread_unblock (t);
-
+  if(t!=NULL && thread_current()->priority < t->priority){
+    thread_yield();
+  }
   return tid;
 }
 
@@ -390,9 +392,15 @@ thread_foreach (thread_action_func *func, void *aux)
 void
 thread_set_priority (int new_priority) 
 {
+  struct list_elem * ready_head = list_begin(&ready_list);
+  int curr_highest = list_entry(ready_head, struct thread, elem)->priority;
   struct thread * t = thread_current();
   t->old_priority = t->priority;
   t->priority = new_priority;
+  if(curr_highest > new_priority)
+  {
+    thread_yield();
+  }
 }
 
 /* Returns the current thread's priority. */
