@@ -1,0 +1,41 @@
+Jatin Goyal(JG)
+Namit Kumar(NK)
+Samyak Jain(SJ)
+Rohit Pant(RP)
+Shreyanshi Bharadia(SB)
+
+Date/Time	Member		Description				Duration(Min)	Files Aff.		Code-Lines Modified
+08-08-18	JG,NK,SJ	Learning Session			70		0			0
+12:05 PM	RP,SB		CVS
+
+08-08-18	JG,NK,SJ	Init. Pintos				150		sessionLog.txt		0
+03:10 PM	RP,SB		project,Logfile				
+
+09-08-18	JG,NK,SJ	Added thread_block_till()		110		timer.c			40
+09:50 PM	RP,SB		function						thread.c
+
+
+10-08-18	JG,NK,SJ	Learning Session			60		0			0
+1:15 PM		RP,SB		threads,pintos lists
+
+13-08-18	NK,SJ		Tut 01 - Task 1				60		timer.c/.h		30
+2:00 PM											thread.c/.h
+
+14-08-18	NK,SJ,JG	Task Failure:				90		timer.c/.h		70
+11:20 AM 	RP,SB		Fresh Implementation					thread.c/.h
+
+14-08-18	NK		T01: Task func.				60		timer.c/.h		65
+07:20 PM 			thread_block_till					thread.c/.h
+
+15-08-18	NK,SJ,RP	T01: Task func.				50		timer.c/.h		30
+06:00 AM 	SB,JG		thread_set_next_wakeup					thread.c/.h
+
+15-08-18	NK,SJ,RP	T01: Task func.				40		timer.c/.h		20
+12:00 PM 	SB,JG		thread_wakeup						thread.c/.h
+
+16-08-18	NK,SJ,RP	Log File updation			50		sessionLog.txt		0
+11:00 AM 	SB,JG									
+											
+16-08-18	SB,JG,NK	T01: add code comments			30		timer.c			0
+01:00 PM 	RP,SJ									thread.c
+											
