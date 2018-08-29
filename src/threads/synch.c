@@ -47,6 +47,8 @@ static bool semabefore(const struct list_elem *a,const struct list_elem *b,void 
 	return list_entry(a,struct thread,elem)->priority > list_entry(b,struct thread,elem)->priority;
 }
 
+
+
 void
 sema_init (struct semaphore *sema, unsigned value) 
 {
@@ -295,6 +297,19 @@ cond_init (struct condition *cond)
    interrupt handler.  This function may be called with
    interrupts disabled, but interrupts will be turned back on if
    we need to sleep. */
+static bool condbefore(const struct list_elem *a,const struct list_elem *b,void *aux UNUSED)
+{
+  struct thread *ta;
+  struct thread *tb;
+  
+  struct semaphore_elem *sa = list_entry (a, struct semaphore_elem, elem);
+  struct semaphore_elem *sb = list_entry (b, struct semaphore_elem, elem);
+  ta = list_entry(list_front(&sa->semaphore.waiters), struct thread, elem);
+  tb = list_entry(list_front(&sb->semaphore.waiters), struct thread, elem);
+  return ta->priority > tb->priority;
+}
+
+
 void
 cond_wait (struct condition *cond, struct lock *lock) 
 {
@@ -307,6 +322,7 @@ cond_wait (struct condition *cond, struct lock *lock)
   
   sema_init (&waiter.semaphore, 0);
   list_push_back (&cond->waiters, &waiter.elem);
+  // list_insert_ordered(&cond->waiters, &waiter.elem, condbefore, NULL);
   lock_release (lock);
   sema_down (&waiter.semaphore);
   lock_acquire (lock);
@@ -319,6 +335,7 @@ cond_wait (struct condition *cond, struct lock *lock)
    An interrupt handler cannot acquire a lock, so it does not
    make sense to try to signal a condition variable within an
    interrupt handler. */
+
 void
 cond_signal (struct condition *cond, struct lock *lock UNUSED) 
 {
@@ -326,10 +343,28 @@ cond_signal (struct condition *cond, struct lock *lock UNUSED)
   ASSERT (lock != NULL);
   ASSERT (!intr_context ());
   ASSERT (lock_held_by_current_thread (lock));
+  //  if (!list_empty (&cond->waiters)){ 
+  //   //  struct list_elem *m = list_front(&cond->waiters);
+  //   //  list_remove(m);
+  //   sema_up (&list_entry (list_pop_front(&cond->waiters), struct semaphore_elem, elem)->semaphore);
+  //  }
 
-  if (!list_empty (&cond->waiters)) 
-    sema_up (&list_entry (list_pop_front (&cond->waiters),
-                          struct semaphore_elem, elem)->semaphore);
+    if (!list_empty (&cond->waiters))
+  {
+    /*
+      Get the semaphore element that has the highest priority thread waiting 
+      for it. 
+     */
+    struct list_elem *m = list_min (&cond->waiters, condbefore, NULL);
+    list_remove (m);
+    sema_up (&(list_entry (m, struct semaphore_elem, elem)->semaphore));
+    /* The following is avoided wince it is computationally expensive.*/
+    
+      // list_sort (&cond->waiters, condbefore, NULL);
+      // sema_up (&list_entry (list_pop_front (&cond->waiters),
+      // struct semaphore_elem, elem)->semaphore);
+    
+  }
 }
 
 /* Wakes up all threads, if any, waiting on COND (protected by
