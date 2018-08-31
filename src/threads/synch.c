@@ -210,7 +210,9 @@ lock_acquire (struct lock *lock)
   ASSERT (!lock_held_by_current_thread (lock));
 
   sema_down (&lock->semaphore);
-  lock->holder = thread_current ();
+  struct thread *t = thread_current();
+  list_push_back(&t->already_acquired, &lock->elem);
+  lock->holder = t;
 }
 
 /* Tries to acquires LOCK and returns true if successful or false
@@ -228,8 +230,9 @@ lock_try_acquire (struct lock *lock)
   ASSERT (!lock_held_by_current_thread (lock));
 
   success = sema_try_down (&lock->semaphore);
-  if (success)
+  if (success){
     lock->holder = thread_current ();
+  }
   return success;
 }
 
@@ -245,6 +248,8 @@ lock_release (struct lock *lock)
   ASSERT (lock_held_by_current_thread (lock));
 
   lock->holder = NULL;
+
+  list_remove(&lock->elem);
   sema_up (&lock->semaphore);
 }
 
@@ -343,11 +348,9 @@ cond_signal (struct condition *cond, struct lock *lock UNUSED)
   ASSERT (lock != NULL);
   ASSERT (!intr_context ());
   ASSERT (lock_held_by_current_thread (lock));
-  //  if (!list_empty (&cond->waiters)){ 
-  //   //  struct list_elem *m = list_front(&cond->waiters);
-  //   //  list_remove(m);
+  // if (!list_empty (&cond->waiters)){ 
   //   sema_up (&list_entry (list_pop_front(&cond->waiters), struct semaphore_elem, elem)->semaphore);
-  //  }
+  // }
 
     if (!list_empty (&cond->waiters))
   {
