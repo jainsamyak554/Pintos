@@ -90,6 +90,7 @@ struct thread
     int64_t wakeup_at;
     int priority;                       /* Priority. */
     int old_priority;
+    int prio_dono;
     struct list_elem allelem;           /* List element for all threads list. */
 
     struct list already_acquired;
@@ -148,4 +149,7 @@ void thread_priority_temporarily_up(void);
 void thread_priority_restore(void);
 void thread_block_till(int64_t);
 void thread_wakeup(int64_t);
+bool prio(const struct list_elem *,const struct list_elem *,void *);
+
+int thread_get_donated_priority(struct thread *);
 #endif /* threads/thread.h */
