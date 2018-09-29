@@ -104,7 +104,7 @@ timer_sleep (int64_t ticks)
   if(ticks>0){
   
   //Setting the priority to maximum initially so that whenever it wakes up, it is processed before everyone.
-    thread_priority_temporarily_up();
+    // thread_priority_temporarily_up();
     
   //Blocking the thread for the given time and adding it to sleeper's list.  
     thread_block_till(wakeup_at);
@@ -112,10 +112,10 @@ timer_sleep (int64_t ticks)
     //   thread_yield ();
     
   //Adding in sleeper's list in ordered way and setting the global variable of next_wakeup as list's first element.  
-    thread_set_next_wakeup();
+    // thread_set_next_wakeup();
     
   //Restoring the priority of thread to the original value.  
-    thread_priority_restore(); 
+    // thread_priority_restore(); 
   }
 }
 

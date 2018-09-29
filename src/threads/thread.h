@@ -90,15 +90,16 @@ struct thread
     int64_t wakeup_at;
     int priority;                       /* Priority. */
     int old_priority;
-    int prio_dono;
     struct list_elem allelem;           /* List element for all threads list. */
 
+    int nice;
+    int recent_cpu;
     struct list already_acquired;
     struct lock *seeking;
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
     // struct list_elem sleepers_elem;
-
+    bool no_yield;
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
@@ -144,6 +145,13 @@ void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 
+void set_all_recent_cpu(void);
+void set_all_priority(void);
+void thread_update_load_avg(void);
+void thread_update_recent_cpu(struct thread *);
+void thread_set_new_priority(struct thread *);
+
+void timer_wakeup(void);
 void thread_set_next_wakeup(void);
 void thread_priority_temporarily_up(void);
 void thread_priority_restore(void);
